@@ -8,7 +8,7 @@ from gevent import monkey; monkey.patch_all()
 import gevent
 import yaml
 import time
-
+import logging.config
 
 user_agent = {}
 BASE_URL = ''
@@ -25,10 +25,8 @@ def set_logger(log):
 def setup_logger(config):
     with open(config['log_settings']) as f:
         cfg = yaml.load(f)
-
-    logging.config.dictConfig(cfg)
-
-    set_logger(logging.getLogger('clogger'))
+        logging.config.dictConfig(cfg)
+        set_logger(logging.getLogger('clogger'))
 
 
 
@@ -86,7 +84,7 @@ def process_all_pages(start_page, cookies):
 #Up ll advertisements
 def up_all_ads(ads_list, cookies):
     for adv in ads_list:
-        logger.info("       Upping ad with id" + adv)
+        logger.info('       Upping ad with id = ' +  adv)
         h = user_agent[random.randint(0, len(user_agent) - 1)]
         requests.post(BASE_URL + '?adv-up=' + adv, cookies=cookies, headers={"User-Agent" : h})
 
@@ -101,15 +99,15 @@ def up_user_ads(login, password):
 
 def worker(login, password):
     while True:
-        # logger.info("Upping ads for user " + login)
-        up_user_ads(u['user_name'], u['password'])
+        logger.info('Upping ads for user ' + login)
+        up_user_ads(login, password)
         time.sleep(timeout + random.randint(100, 600))
 
 
 if __name__ == '__main__':
     with open('config.yaml') as f:
         cfg = yaml.load(f)
-        set_logger(cfg)
+        setup_logger(cfg)
         user_agent = cfg['user_agents']
         BASE_URL = cfg['base-url']
 
