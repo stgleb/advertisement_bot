@@ -8,7 +8,7 @@ setup(
     long_description="""Advertisement bot""",
     author='Gleb Stepanov',
     author_email='glebstepanov1992@gmail.com',
-    install_requires=['PyYAML==3.10', "argparse==1.2.1","requests==2.2.1","beautifulsoup4==4.3.2"],
+    install_requires=['PyYAML==3.10', "argparse==1.2.1","requests==2.2.1", "gevent==1.0.1", "beautifulsoup4==4.3.2"],
     packages=find_packages(),
     entry_points={
         'console_scripts': [

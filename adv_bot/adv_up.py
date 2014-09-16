@@ -1,7 +1,7 @@
 import logging
 import random
 import requests
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 from gevent import monkey; monkey.patch_all()
 
