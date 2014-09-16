@@ -30,11 +30,34 @@ def setup_logger(config):
 
 
 
-def sign_in(login, passowrd):
+def sign_in(login, password):
 
     payload = dict()
-    payload['HomeLeft__339$Login__265$tbUserName'] = login
-    payload['HomeLeft__339$Login__265$tbPassword'] = passowrd
+    # payload['HomeLeft__339$Login__265$tbUserName'] = login
+    # payload['HomeLeft__339$Login__265$tbPassword'] = passowrd
+
+    session = requests.session()
+    r = session.get('http://premier.ua/default.aspx')
+    soup = BeautifulSoup(r.text)
+    form = soup.find('form',attrs={'id':'form1'})
+    inputs = form.findAll('input')
+
+    for i in inputs:
+        if i['type'] != 'button':
+            payload[i['name']] = i['value']
+
+            if 'UserName' in i['name']:
+                payload[i['name']] = login
+            else:
+                if 'Password' in i['name']:
+                    payload[i['name']] = password
+
+
+
+    r = session.post('http://premier.ua/default.aspx', data=payload)
+    r = session.get(BASE_URL)
+
+    print r.text
 
     r = requests.get(BASE_URL)
     r = requests.post('http://premier.ua/myadvertisements.aspx', data=payload, files={'':''})
@@ -63,9 +86,11 @@ def process_all_pages(start_page, cookies):
     pages = soup.findAll('div', attrs={"class":"pagins"})
     adv_ups = []
 
-    links = pages[0].findAll('a')
+    if len(pages) > 0:
+        links = pages[0].findAll('a')
 
     if len(links) > 0:
+
         for link in links:
             id = link['id']
 
