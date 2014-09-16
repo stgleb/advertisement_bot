@@ -14,7 +14,7 @@ handlers:
         class : logging.FileHandler
         formatter: simpleFormater
         level: WARNING
-        filename: songinfo.log
+        filename: adv-bot.log
 
 loggers:
     clogger:

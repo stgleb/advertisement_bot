@@ -7,6 +7,8 @@ base-url: 'http://premier.ua/'
 
 log_settings: logging.yaml
 
+logging_type: console #can be changed to file
+
 #timeout = timeout_base + rand(timeout_min,timeout_max)
 timeout_min: 100
 timeout_max: 600

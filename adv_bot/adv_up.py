@@ -27,10 +27,14 @@ def set_logger(log):
 
 
 def setup_logger(config):
-    with open(config['log_settings']) as f:
+    with open('../adv_bot/' + config['log_settings']) as f:
         cfg = yaml.load(f)
         logging.config.dictConfig(cfg)
-        set_logger(logging.getLogger('clogger'))
+
+        if config['logging_type'] == 'console':
+            set_logger(logging.getLogger('clogger'))
+        else:
+            set_logger(logging.getLogger('flogger'))
 
 
 def sign_in(login, password):
@@ -129,6 +133,10 @@ def main():
     with open('../adv_bot/config.yaml') as f:
         cfg = yaml.load(f)
         setup_logger(cfg)
+
+        global BASE_URL
+        global user_agent
+
         user_agent = cfg['user_agents']
         BASE_URL = cfg['base-url']
 
