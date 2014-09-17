@@ -1,11 +1,8 @@
-import logging
 import random
 import requests
 from bs4 import BeautifulSoup
 
-from gevent import monkey; monkey.patch_all()
 
-import gevent
 import yaml
 import time
 import logging.config
@@ -21,20 +18,6 @@ timeout_max = 0
 logger = None
 
 
-def set_logger(log):
-    global logger
-    logger = log
-
-
-def setup_logger(config):
-    with open('../adv_bot/' + config['log_settings']) as f:
-        cfg = yaml.load(f)
-        logging.config.dictConfig(cfg)
-
-        if config['logging_type'] == 'console':
-            set_logger(logging.getLogger('clogger'))
-        else:
-            set_logger(logging.getLogger('flogger'))
 
 
 def sign_in(login, password):
@@ -109,7 +92,7 @@ def process_all_pages(start_page, session):
 #Up ll advertisements
 def up_all_ads(ads_list, session):
     for adv in ads_list:
-        logger.info('       Upping ad with id = ' +  adv)
+        print '       Upping ad with id = ' +  adv
         h = user_agent[random.randint(0, len(user_agent) - 1)]
         session.post(BASE_URL + ADV + '?adv-up=' + adv, headers={"User-Agent" : h})
 
@@ -124,15 +107,14 @@ def up_user_ads(login, password):
 
 def worker(login, password):
     while True:
-        logger.info('Upping ads for user ' + login)
+        print 'Upping ads for user ' + login
         up_user_ads(login, password)
         time.sleep(timeout + random.randint(0, 10))
 
 
 def main():
     with open('../adv_bot/config.yaml') as f:
-        cfg = yaml.load(f)
-        setup_logger(cfg)
+        cfg = yaml.load(f)       
 
         global BASE_URL
         global user_agent
@@ -151,7 +133,7 @@ def main():
 
         list = []
         for u in cfg['users']:
-                gevent.spawn(worker(u['user_name'], u['password']))
+                worker(u['user_name'], u['password'])
 
 
 if __name__ == '__main__':
