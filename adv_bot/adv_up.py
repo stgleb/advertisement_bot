@@ -113,7 +113,7 @@ def worker(login, password):
 
 
 def main():
-    with open('../adv_bot/config.yaml') as f:
+    with open('config.yaml') as f:
         cfg = yaml.load(f)       
 
         global BASE_URL
@@ -137,6 +137,10 @@ def main():
 
 
 if __name__ == '__main__':
-   main()
+    while True:
+        try:
+            main()
+        finally:
+            print 'crashed'
 
 
