@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 
 import yaml
 import time
-import logging.config
+import datetime
 
 user_agent = {}
 BASE_URL = ''
@@ -18,10 +18,7 @@ timeout_max = 0
 logger = None
 
 
-
-
 def sign_in(login, password):
-
     payload = dict()
     session = requests.session()
     r = session.get(BASE_URL + DEFAULT)
@@ -38,8 +35,6 @@ def sign_in(login, password):
             else:
                 if 'Password' in i['name']:
                     payload[i['name']] = password
-
-
 
     r = session.post(BASE_URL + DEFAULT, data=payload)
     r = session.get(BASE_URL + ADV)
@@ -92,7 +87,7 @@ def process_all_pages(start_page, session):
 #Up ll advertisements
 def up_all_ads(ads_list, session):
     for adv in ads_list:
-        print '       Upping ad with id = ' +  adv
+        print '   Upping ad with id = ' + adv + " " + str(datetime.datetime.now())
         h = user_agent[random.randint(0, len(user_agent) - 1)]
         session.post(BASE_URL + ADV + '?adv-up=' + adv, headers={"User-Agent" : h})
 
