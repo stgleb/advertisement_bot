@@ -121,9 +121,9 @@ def main():
         global timeout_min
         global timeout_max
 
-        timeout = cfg['timeout_base']
-        timeout_min = cfg['timeout_min']
-        timeout_max = cfg['timeout_max']
+        timeout = cfg.get('timeout_base',300)
+        timeout_min = cfg.get('timeout_min',50)
+        timeout_max = cfg.get('timeout_max',100)
 
 
         list = []
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     while True:
         try:
             main()
-        finally:
-            print 'crashed'
-
-
+	except Exception:
+		import traceback
+		traceback.print_exc()
+		time.sleep(300)
