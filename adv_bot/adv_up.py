@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import yaml
 import time
 import datetime
+import threading
 
 user_agent = {}
 BASE_URL = ''
@@ -127,8 +128,13 @@ def main():
 
 
         list = []
+	t = None
         for u in cfg['users']:
-                worker(u['user_name'], u['password'])
+		t = threading.Thread(target=worker, kwargs={"login": u['user_name'], 
+						     "password": u['password']})
+		t.start()
+	if t is not None:
+		t.join()
 
 
 if __name__ == '__main__':
