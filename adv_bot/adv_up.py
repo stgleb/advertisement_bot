@@ -22,9 +22,14 @@ logger = None
 def sign_in(login, password):
     payload = dict()
     session = requests.session()
-    r = session.get(BASE_URL + DEFAULT)
+    proxy = {
+        "http": 'http://109.87.198.183:8080',
+        "https": 'https://109.87.198.183:8080'
+    }
+
+    r = session.get(BASE_URL + DEFAULT, proxies=proxy)
     soup = BeautifulSoup(r.text)
-    form = soup.find('form',attrs={'id':'form1'})
+    form = soup.find('form', attrs={'id':'form1'})
     inputs = form.findAll('input')
 
     for i in inputs:
@@ -43,7 +48,7 @@ def sign_in(login, password):
     return session
 
 
-#get all adv-up id from one page
+# get all adv-up id from one page
 def process_page(page_text):
     soup = BeautifulSoup(page_text)
 
@@ -53,7 +58,7 @@ def process_page(page_text):
         yield a['id']
 
 
-#Get all adv-up ids from all pages
+# Get all adv-up ids from all pages
 def process_all_pages(start_page, session):
     soup = BeautifulSoup(start_page)
 
@@ -85,7 +90,7 @@ def process_all_pages(start_page, session):
     return adv_ups
 
 
-#Up ll advertisements
+# Up ll advertisements
 def up_all_ads(ads_list, session):
     for adv in ads_list:
         print '   Upping ad with id = ' + adv + " " + str(datetime.datetime.now())
