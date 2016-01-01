@@ -9,6 +9,7 @@ import datetime
 import threading
 
 user_agent = {}
+proxies = []
 BASE_URL = ''
 ADV = 'myadvertisements.aspx'
 DEFAULT = 'default.aspx'
@@ -22,14 +23,13 @@ logger = None
 def sign_in(login, password):
     payload = dict()
     session = requests.session()
-    proxy = {
-        "http": 'http://109.87.198.183:8080',
-        "https": 'https://109.87.198.183:8080'
-    }
+
+    proxy_index = random.randint(0, len(proxies))
+    proxy = proxies[proxy_index]
 
     r = session.get(BASE_URL + DEFAULT, proxies=proxy)
     soup = BeautifulSoup(r.text)
-    form = soup.find('form', attrs={'id':'form1'})
+    form = soup.find('form', attrs={'id': 'form1'})
     inputs = form.findAll('input')
 
     for i in inputs:
@@ -42,8 +42,8 @@ def sign_in(login, password):
                 if 'Password' in i['name']:
                     payload[i['name']] = password
 
-    r = session.post(BASE_URL + DEFAULT, data=payload)
-    r = session.get(BASE_URL + ADV)
+    session.post(BASE_URL + DEFAULT, data=payload)
+    session.get(BASE_URL + ADV)
 
     return session
 
@@ -119,21 +119,23 @@ def main():
 
         global BASE_URL
         global user_agent
+        global proxies
 
         user_agent = cfg['user_agents']
         BASE_URL = cfg['base-url']
+        proxies = cfg['proxy']
 
         global timeout
         global timeout_min
         global timeout_max
 
-        timeout = cfg.get('timeout_base',300)
-        timeout_min = cfg.get('timeout_min',50)
-        timeout_max = cfg.get('timeout_max',100)
-
+        timeout = cfg.get('timeout_base', 300)
+        timeout_min = cfg.get('timeout_min', 50)
+        timeout_max = cfg.get('timeout_max', 100)
 
         list = []
 	t = None
+
         for u in cfg['users']:
 		t = threading.Thread(target=worker, kwargs={"login": u['user_name'], 
 						     "password": u['password']})
