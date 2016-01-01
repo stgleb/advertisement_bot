@@ -110,38 +110,35 @@ def up_user_ads(login, password):
     up_all_ads(adv_to_up, session)
 
 
-def worker(login, password):
+def worker(cfg):
+    global BASE_URL
+    global user_agent
+    global proxies
+
+    user_agent = cfg['user_agents']
+    BASE_URL = cfg['base-url']
+    proxies = cfg['proxy']
+
+    global timeout
+    global timeout_min
+    global timeout_max
+
+    timeout = cfg.get('timeout_base', 300)
+    timeout_min = cfg.get('timeout_min', 50)
+    timeout_max = cfg.get('timeout_max', 100)
+
     while True:
-        print 'Upping ads for user ' + login
-        up_user_ads(login, password)
+        for u in cfg['users']:
+            print 'Upping adds for {0} :'.format(u['user_name'])
+            up_user_ads(u['user_name'], u['password'])
+
         sleep(timeout + random.randint(0, 100))
 
 
 def main():
     with open('config.yaml') as f:
-        cfg = yaml.load(f)       
-
-        global BASE_URL
-        global user_agent
-        global proxies
-
-        user_agent = cfg['user_agents']
-        BASE_URL = cfg['base-url']
-        proxies = cfg['proxy']
-
-        global timeout
-        global timeout_min
-        global timeout_max
-
-        timeout = cfg.get('timeout_base', 300)
-        timeout_min = cfg.get('timeout_min', 50)
-        timeout_max = cfg.get('timeout_max', 100)
-
-        for u in cfg['users']:
-            g = gevent.spawn(worker, u['user_name'], u['password'])
-            threads.append(g)
-
-        gevent.joinall(threads)
+        cfg = yaml.load(f)
+        worker(cfg=cfg)
 
 
 if __name__ == '__main__':
