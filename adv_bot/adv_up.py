@@ -1,3 +1,7 @@
+from gevent import monkey, sleep
+import gevent
+monkey.patch_all()
+
 import random
 import requests
 from bs4 import BeautifulSoup
@@ -6,10 +10,10 @@ from bs4 import BeautifulSoup
 import yaml
 import time
 import datetime
-import threading
 
 user_agent = {}
 proxies = []
+threads = []
 BASE_URL = ''
 ADV = 'myadvertisements.aspx'
 DEFAULT = 'default.aspx'
@@ -24,7 +28,7 @@ def sign_in(login, password):
     payload = dict()
     session = requests.session()
 
-    proxy_index = random.randint(0, len(proxies))
+    proxy_index = random.randint(0, len(proxies) - 1)
     proxy = proxies[proxy_index]
 
     r = session.get(BASE_URL + DEFAULT, proxies=proxy)
@@ -62,7 +66,7 @@ def process_page(page_text):
 def process_all_pages(start_page, session):
     soup = BeautifulSoup(start_page)
 
-    pages = soup.findAll('div', attrs={"class":"pagins"})
+    pages = soup.findAll('div', attrs={"class": "pagins"})
     adv_ups = []
 
     if len(pages) > 0:
@@ -78,7 +82,7 @@ def process_all_pages(start_page, session):
         for link in links:
             id = link['id']
 
-            data = {'isPageRequest':True, 'page' : id}
+            data = {'isPageRequest':True, 'page': id}
             r = session.post(BASE_URL + ADV, data=data)
 
             for elem in process_page(r.text):
@@ -95,7 +99,7 @@ def up_all_ads(ads_list, session):
     for adv in ads_list:
         print '   Upping ad with id = ' + adv + " " + str(datetime.datetime.now())
         h = user_agent[random.randint(0, len(user_agent) - 1)]
-        session.post(BASE_URL + ADV + '?adv-up=' + adv, headers={"User-Agent" : h})
+        session.post(BASE_URL + ADV + '?adv-up=' + adv, headers={"User-Agent": h})
 
 
 def up_user_ads(login, password):
@@ -110,7 +114,7 @@ def worker(login, password):
     while True:
         print 'Upping ads for user ' + login
         up_user_ads(login, password)
-        time.sleep(timeout + random.randint(0, 10))
+        sleep(timeout + random.randint(0, 100))
 
 
 def main():
@@ -133,22 +137,21 @@ def main():
         timeout_min = cfg.get('timeout_min', 50)
         timeout_max = cfg.get('timeout_max', 100)
 
-        list = []
-	t = None
-
         for u in cfg['users']:
-		t = threading.Thread(target=worker, kwargs={"login": u['user_name'], 
-						     "password": u['password']})
-		t.start()
-	if t is not None:
-		t.join()
+            g = gevent.spawn(worker, u['user_name'], u['password'])
+            threads.append(g)
+
+        gevent.joinall(threads)
 
 
 if __name__ == '__main__':
     while True:
         try:
             main()
-	except Exception:
-		import traceback
-		traceback.print_exc()
-		time.sleep(300)
+        except KeyboardInterrupt:
+            exit(1)
+        except Exception:
+            import traceback
+
+            traceback.print_exc()
+            time.sleep(300)
