@@ -131,7 +131,7 @@ def worker(cfg):
         for u in cfg['users']:
             print 'Upping adds for {0} :'.format(u['user_name'])
             up_user_ads(u['user_name'], u['password'])
-    
+
         sleep(timeout + random.randint(timeout_min, timeout_max))
 
 
