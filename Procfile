@@ -1,1 +1,1 @@
-worker: python python adv_bot/adv_up.py
+worker: python adv_bot/adv_up.py
