@@ -1,7 +1,3 @@
-from gevent import monkey, sleep
-import gevent
-monkey.patch_all()
-
 import random
 import requests
 from bs4 import BeautifulSoup
@@ -132,7 +128,7 @@ def worker(cfg):
             print 'Upping adds for {0} :'.format(u['user_name'])
             up_user_ads(u['user_name'], u['password'])
 
-        sleep(timeout + random.randint(timeout_min, timeout_max))
+        time.sleep(timeout + random.randint(timeout_min, timeout_max))
 
 
 def main():
