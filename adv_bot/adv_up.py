@@ -27,7 +27,10 @@ def sign_in(login, password):
     proxy_index = random.randint(0, len(proxies) - 1)
     proxy = proxies[proxy_index]
 
+    # Disable proxy
     r = session.get(BASE_URL + DEFAULT, proxies=proxy)
+    # r = session.get(BASE_URL + DEFAULT)
+
     soup = BeautifulSoup(r.text)
     form = soup.find('form', attrs={'id': 'form1'})
     inputs = form.findAll('input')
