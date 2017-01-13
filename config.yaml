@@ -1,13 +1,7 @@
 users:
   -
-   user_name : 'alf_an@ukr.net'
-   password: '12345678'
-  -
-   user_name : 'mir.fedotov@gmail.com'
-   password: 'vbrvbr5352'
-  -
-   user_name : 'yangemba@gmail.com'
-   password: 'bayan2025'
+   user_name : 'example@ukr.net'
+   password: ''
 
 base-url: 'http://premier.ua/'
 
